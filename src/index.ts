@@ -5,45 +5,53 @@ declare global {
   }
 }
 
+// Exponentially scaled powers of 2
+const shifts: readonly bigint[] = [
+  4294967296n,
+  2147483648n,
+  1073741824n,
+  536870912n,
+  268435456n,
+  134217728n,
+  67108864n,
+  33554432n,
+  16777216n,
+  8388608n,
+  4194304n,
+  2097152n,
+  1048576n,
+  524288n,
+  262144n,
+  131072n,
+  65536n,
+  32768n,
+  16384n,
+  8192n,
+  4096n,
+  2048n,
+  1024n,
+  512n,
+  256n,
+  128n,
+  64n,
+  32n,
+  16n,
+  8n,
+  4n,
+  2n,
+  1n,
+];
+
 const bitLength: typeof BigInt.bitLength = (n) => {
   if (n === 0n) return 0n;
-  let absN = n < 0n ? -n : n;
+  let abs = n < 0n ? -n : n;
 
   let length = 1n;
 
-  // Exponentially scaled powers of 2
-  const shifts = [
-    16777216n,
-    8388608n,
-    4194304n,
-    2097152n,
-    1048576n,
-    524288n,
-    262144n,
-    131072n,
-    65536n,
-    32768n,
-    16384n,
-    8192n,
-    4096n,
-    2048n,
-    1024n,
-    512n,
-    256n,
-    128n,
-    64n,
-    32n,
-    16n,
-    8n,
-    4n,
-    2n,
-    1n,
-  ];
-
   for (const shift of shifts) {
-    const test = absN >> shift;
+    const test = abs >> shift;
     if (test > 0n) {
-      absN = test;
+      abs = test;
       length += shift;
     }
   }
