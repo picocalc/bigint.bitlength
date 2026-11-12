@@ -54,4 +54,43 @@ const bitLength: typeof BigInt.bitLength = (n) => {
 // oxlint-disable-next-line no-unnecessary-condition => intended
 BigInt.bitLength ??= bitLength;
 
-export { bitLength };
+function powBitLength(a: bigint, b: bigint): bigint {
+  if (b === 0n) return 1n;
+
+  const abs = a < 0n ? -a : a;
+  if (abs === 0n) return 0n;
+  if (abs === 1n) return 1n;
+
+  if ((abs & (abs - 1n)) === 0n) {
+    return (BigInt.bitLength(abs) - 1n) * b + 1n;
+  }
+
+  let prec = BigInt.bitLength(b) + 32n;
+
+  while (true) {
+    const int = BigInt.bitLength(abs) - 1n;
+    let x = int >= prec ? abs >> (int - prec) : abs << (prec - int);
+
+    let log2 = int << prec;
+    const two = 1n << (prec + 1n);
+
+    for (let i = prec - 1n; i >= 0n; i--) {
+      x = (x * x) >> prec;
+      if (x >= two) {
+        log2 |= 1n << i;
+        x >>= 1n;
+      }
+    }
+
+    const lo = (b * log2) >> prec;
+    const hi = (b * (log2 + 1n)) >> prec;
+
+    if (lo === hi) {
+      return lo + 1n;
+    }
+
+    prec *= 2n;
+  }
+}
+
+export { bitLength, powBitLength };
